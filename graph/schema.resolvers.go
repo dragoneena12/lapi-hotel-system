@@ -12,18 +12,22 @@ import (
 	"github.com/dragoneena12/lapi-hotel-system/graph/model"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	todo := &model.Todo{
+func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (todo *model.Todo, err error) {
+	todo = &model.Todo{
 		Text:   input.Text,
 		ID:     fmt.Sprintf("T%d", rand.Int()),
 		UserID: input.UserID, // fix this line
 	}
-	r.todos = append(r.todos, todo)
+	err = todo.Create()
+	if err != nil {
+		return
+	}
 	return todo, nil
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	return r.todos, nil
+	todos, err := model.GetAllTodo("", 100)
+	return todos, err
 }
 
 func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, error) {

@@ -4,17 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/dragoneena12/lapi-hotel-system/config"
 	"github.com/dragoneena12/lapi-hotel-system/graph"
 	"github.com/dragoneena12/lapi-hotel-system/graph/generated"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 )
-
-const defaultPort = "8080"
 
 var tokenAuth *jwtauth.JWTAuth
 
@@ -28,10 +26,7 @@ func init() {
 }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+	port := config.Config.Port
 
 	router := chi.NewRouter()
 	// Protected routes
@@ -43,7 +38,7 @@ func main() {
 		// the provided authenticator middleware, but you can write your
 		// own very easily, look at the Authenticator method in jwtauth.go
 		// and tweak it, its not scary.
-		r.Use(jwtauth.Authenticator)
+		// r.Use(jwtauth.Authenticator)
 
 		srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 		r.Handle("/query", srv)
@@ -58,6 +53,6 @@ func main() {
 		router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	})
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Printf("connect to http://localhost:%d/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Config.Port), router))
 }
