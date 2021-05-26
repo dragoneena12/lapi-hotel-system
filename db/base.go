@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	tableNameTodos = "todos"
+	TableNameStays  = "stays"
+	TableNameHotels = "hotels"
 )
 
 var DbConnection *sql.DB
@@ -21,11 +22,20 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	cmd := fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %s (
-            id INT PRIMARY KEY NOT NULL,
-            text STRING,
-						done STRING,
-						userid INT)`, tableNameTodos)
+            id STRING PRIMARY KEY NOT NULL,
+            hotel_id STRING,
+						checkin DATETIME,
+						checkout DATETIME,
+						user STRING)`, TableNameStays)
+	DbConnection.Exec(cmd)
+
+	cmd = fmt.Sprintf(`
+        CREATE TABLE IF NOT EXISTS %s (
+            id STRING PRIMARY KEY NOT NULL,
+            name STRING,
+						location STRING)`, TableNameHotels)
 	DbConnection.Exec(cmd)
 }

@@ -2,27 +2,38 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
+scalar DateTime
+
+type Stay {
   id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+  hotel: Hotel!
+  checkin: DateTime!
+  checkout: DateTime!
+  user: String!
 }
 
-type User {
+type Hotel {
   id: ID!
   name: String!
+  location: String!
 }
 
 type Query {
-  todos: [Todo!]!
+  stays: [Stay!]!
+  hotels: [Hotel!]!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
+input check {
+  hotelId: ID!
+}
+
+input newHotel {
+  name: String!
+  location: String!
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  checkin(input: check!): Stay!
+  checkout(input: check!): Stay!
+  addHotel(input: newHotel!): Hotel!
 }

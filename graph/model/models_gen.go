@@ -2,12 +2,17 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Hotel struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Location string `json:"location"`
 }
 
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type Check struct {
+	HotelID string `json:"hotelId"`
+}
+
+type NewHotel struct {
+	Name     string `json:"name"`
+	Location string `json:"location"`
 }
