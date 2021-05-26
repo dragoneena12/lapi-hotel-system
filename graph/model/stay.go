@@ -25,7 +25,7 @@ func (c *Stay) Create() error {
 }
 
 func (c *Stay) Save() error {
-	cmd := fmt.Sprintf("UPDATE %s SET hotel_id = ?, checkin = ?, checkout = ? user = ? WHERE id = ?", db.TableNameStays)
+	cmd := fmt.Sprintf("UPDATE %s SET hotel_id = ?, checkin = ?, checkout = ?, user = ? WHERE id = ?", db.TableNameStays)
 	_, err := db.DbConnection.Exec(cmd, c.HotelId, c.Checkin, c.Checkout, c.User, c.ID)
 	if err != nil {
 		return err
@@ -49,12 +49,13 @@ func GetAllStay(user string, limit int) (Stays []*Stay, err error) {
 	return Stays, nil
 }
 
-func GetMostRecentStay(user string) (Stay *Stay, err error) {
+func GetMostRecentStay(user string) (*Stay, error) {
 	cmd := fmt.Sprintf(`SELECT * FROM %s WHERE user = ? ORDER BY id DESC LIMIT 1`, db.TableNameStays)
 	row := db.DbConnection.QueryRow(cmd, user)
-	err = row.Scan(&Stay.ID, &Stay.HotelId, &Stay.Checkin, &Stay.Checkout, &Stay.User)
+	var Stay Stay
+	err := row.Scan(&Stay.ID, &Stay.HotelId, &Stay.Checkin, &Stay.Checkout, &Stay.User)
 	if err != nil {
-		return
+		return &Stay, err
 	}
-	return Stay, nil
+	return &Stay, nil
 }

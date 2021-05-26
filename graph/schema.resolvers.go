@@ -20,14 +20,21 @@ func (r *mutationResolver) Checkin(ctx context.Context, input model.Check) (*mod
 	if !ok {
 		return nil, nil
 	}
-	stay := &model.Stay{
+	stay, err := model.GetMostRecentStay(user)
+	if err != nil {
+		return stay, err
+	}
+	if stay.Checkout.IsZero() {
+		return nil, fmt.Errorf("already staying")
+	}
+	stay = &model.Stay{
 		ID:       fmt.Sprintf("T%d", rand.Int()),
 		HotelId:  input.HotelID,
 		Checkin:  time.Now(),
 		Checkout: time.Time{},
 		User:     user,
 	}
-	err := stay.Create()
+	err = stay.Create()
 	if err != nil {
 		return stay, err
 	}
@@ -43,6 +50,9 @@ func (r *mutationResolver) Checkout(ctx context.Context, input model.Check) (*mo
 	stay, err := model.GetMostRecentStay(user)
 	if err != nil {
 		return stay, err
+	}
+	if !stay.Checkout.IsZero() {
+		return nil, fmt.Errorf("no stay")
 	}
 	stay.Checkout = time.Now()
 	err = stay.Save()
