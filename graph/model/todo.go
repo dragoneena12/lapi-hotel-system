@@ -34,9 +34,7 @@ func (c *Todo) Save() error {
 }
 
 func GetAllTodo(userId string, limit int) (todos []*Todo, err error) {
-	cmd := fmt.Sprintf(`SELECT * FROM (
-		SELECT id, text, done, userid FROM %s ORDER BY id DESC LIMIT ?
-		) ORDER BY id ASC`, tableName)
+	cmd := fmt.Sprintf(`SELECT id, text, done, userid FROM %s ORDER BY id ASC LIMIT ?`, tableName)
 	rows, err := db.DbConnection.Query(cmd, limit)
 	if err != nil {
 		return

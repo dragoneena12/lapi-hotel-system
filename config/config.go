@@ -11,6 +11,7 @@ type ConfigList struct {
 	DbName    string
 	SQLDriver string
 	Port      int
+	JWTSecret string
 }
 
 var Config ConfigList
@@ -26,5 +27,6 @@ func init() {
 		DbName:    cfg.Section("db").Key("name").String(),
 		SQLDriver: cfg.Section("db").Key("driver").String(),
 		Port:      cfg.Section("web").Key("port").MustInt(),
+		JWTSecret: cfg.Section("auth").Key("jwt_secret").String(),
 	}
 }

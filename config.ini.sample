@@ -4,3 +4,6 @@ driver = sqlite3
 
 [web]
 port = 8080
+
+[auth]
+jwt_secret = xxxxxxxxxxxxxxx
