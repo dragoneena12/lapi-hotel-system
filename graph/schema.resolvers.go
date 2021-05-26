@@ -53,10 +53,16 @@ func (r *mutationResolver) Checkout(ctx context.Context, input model.Check) (*mo
 }
 
 func (r *mutationResolver) AddHotel(ctx context.Context, input model.NewHotel) (*model.Hotel, error) {
+	_, claims, _ := jwtauth.FromContext(ctx)
+	user, ok := claims["sub"].(string)
+	if !ok {
+		return nil, nil
+	}
 	hotel := &model.Hotel{
 		ID:       fmt.Sprintf("T%d", rand.Int()),
 		Name:     input.Name,
 		Location: input.Location,
+		Owner:    user,
 	}
 	err := hotel.Create()
 	if err != nil {

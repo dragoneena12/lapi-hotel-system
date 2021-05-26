@@ -36,6 +36,7 @@ func init() {
         CREATE TABLE IF NOT EXISTS %s (
             id STRING PRIMARY KEY NOT NULL,
             name STRING,
-						location STRING)`, TableNameHotels)
+						location STRING,
+						owner STRING)`, TableNameHotels)
 	DbConnection.Exec(cmd)
 }

@@ -51,6 +51,7 @@ type ComplexityRoot struct {
 		ID       func(childComplexity int) int
 		Location func(childComplexity int) int
 		Name     func(childComplexity int) int
+		Owner    func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -121,6 +122,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Hotel.Name(childComplexity), true
+
+	case "Hotel.owner":
+		if e.complexity.Hotel.Owner == nil {
+			break
+		}
+
+		return e.complexity.Hotel.Owner(childComplexity), true
 
 	case "Mutation.addHotel":
 		if e.complexity.Mutation.AddHotel == nil {
@@ -297,6 +305,7 @@ type Hotel {
   id: ID!
   name: String!
   location: String!
+  owner: String!
 }
 
 type Query {
@@ -527,6 +536,41 @@ func (ec *executionContext) _Hotel_location(ctx context.Context, field graphql.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Hotel_owner(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Owner, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2247,6 +2291,11 @@ func (ec *executionContext) _Hotel(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "location":
 			out.Values[i] = ec._Hotel_location(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "owner":
+			out.Values[i] = ec._Hotel_owner(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

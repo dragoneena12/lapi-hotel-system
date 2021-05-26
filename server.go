@@ -22,7 +22,7 @@ import (
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
-	tokenAuth = jwtauth.New("HS256", config.Config.JWTSecret, nil)
+	tokenAuth = jwtauth.New("HS256", []byte(config.Config.JWTSecret), nil)
 }
 
 func main() {
@@ -33,21 +33,25 @@ func main() {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8000"},
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		Debug:            true,
 	}).Handler)
+	router.Use(jwtauth.Verifier(tokenAuth))
 
 	c := generated.Config{Resolvers: &graph.Resolver{}}
 	c.Directives.HasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (interface{}, error) {
-		router.Use(jwtauth.Verifier(tokenAuth))
-		token, claims, _ := jwtauth.FromContext(ctx)
+		token, claims, err := jwtauth.FromContext(ctx)
+		if err != nil {
+			return nil, err
+		}
 		if token == nil || jwt.Validate(token) != nil {
 			return nil, fmt.Errorf(http.StatusText(http.StatusUnauthorized))
 		}
-		roles, ok := claims["https://lapi.tokyo/claims/roles"].([]model.Role)
-		roles = append(roles, "USER")
+		roles, ok := claims["https://lapi.tokyo/claims/roles"].([]interface{})
 		if !ok {
 			return nil, fmt.Errorf("role error")
 		}
+		roles = append(roles, "USER")
 		for _, r := range roles {
 			if role == r {
 				return next(ctx)
