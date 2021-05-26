@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -42,6 +43,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -273,6 +275,14 @@ var sources = []*ast.Source{
 #
 # https://gqlgen.com/getting-started/
 
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
+  ADMIN
+  PARTNER
+  USER
+}
+
 scalar DateTime
 
 type Stay {
@@ -290,7 +300,7 @@ type Hotel {
 }
 
 type Query {
-  stays: [Stay!]!
+  stays: [Stay!]! @hasRole(role: USER)
   hotels: [Hotel!]!
 }
 
@@ -304,9 +314,9 @@ input newHotel {
 }
 
 type Mutation {
-  checkin(input: check!): Stay!
-  checkout(input: check!): Stay!
-  addHotel(input: newHotel!): Hotel!
+  checkin(input: check!): Stay! @hasRole(role: USER)
+  checkout(input: check!): Stay! @hasRole(role: USER)
+  addHotel(input: newHotel!): Hotel! @hasRole(role: PARTNER)
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -314,6 +324,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.Role
+	if tmp, ok := rawArgs["role"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+		arg0, err = ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["role"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_addHotel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -542,8 +567,32 @@ func (ec *executionContext) _Mutation_checkin(ctx context.Context, field graphql
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Checkin(rctx, args["input"].(model.Check))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().Checkin(rctx, args["input"].(model.Check))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "USER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Stay); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/dragoneena12/lapi-hotel-system/graph/model.Stay`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -584,8 +633,32 @@ func (ec *executionContext) _Mutation_checkout(ctx context.Context, field graphq
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Checkout(rctx, args["input"].(model.Check))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().Checkout(rctx, args["input"].(model.Check))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "USER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Stay); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/dragoneena12/lapi-hotel-system/graph/model.Stay`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -626,8 +699,32 @@ func (ec *executionContext) _Mutation_addHotel(ctx context.Context, field graphq
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AddHotel(rctx, args["input"].(model.NewHotel))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().AddHotel(rctx, args["input"].(model.NewHotel))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "PARTNER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Hotel); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/dragoneena12/lapi-hotel-system/graph/model.Hotel`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -661,8 +758,32 @@ func (ec *executionContext) _Query_stays(ctx context.Context, field graphql.Coll
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Stays(rctx)
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Stays(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "USER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*model.Stay); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/dragoneena12/lapi-hotel-system/graph/model.Stay`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2634,6 +2755,16 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx context.Context, v interface{}) (model.Role, error) {
+	var res model.Role
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNStay2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐStay(ctx context.Context, sel ast.SelectionSet, v model.Stay) graphql.Marshaler {

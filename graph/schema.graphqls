@@ -2,6 +2,14 @@
 #
 # https://gqlgen.com/getting-started/
 
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
+  ADMIN
+  PARTNER
+  USER
+}
+
 scalar DateTime
 
 type Stay {
@@ -19,7 +27,7 @@ type Hotel {
 }
 
 type Query {
-  stays: [Stay!]!
+  stays: [Stay!]! @hasRole(role: USER)
   hotels: [Hotel!]!
 }
 
@@ -33,7 +41,7 @@ input newHotel {
 }
 
 type Mutation {
-  checkin(input: check!): Stay!
-  checkout(input: check!): Stay!
-  addHotel(input: newHotel!): Hotel!
+  checkin(input: check!): Stay! @hasRole(role: USER)
+  checkout(input: check!): Stay! @hasRole(role: USER)
+  addHotel(input: newHotel!): Hotel! @hasRole(role: PARTNER)
 }
