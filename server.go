@@ -12,23 +12,26 @@ import (
 	"github.com/dragoneena12/lapi-hotel-system/graph/generated"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/rs/cors"
 )
 
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
 	tokenAuth = jwtauth.New("HS256", config.Config.JWTSecret, nil)
-
-	// For debugging/example purposes, we generate and print
-	// a sample jwt token with claims `user_id:123` here:
-	// _, tokenString, _ := tokenAuth.Encode(map[string]interface{}{"user_id": 123})
-	// fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
 }
 
 func main() {
 	port := config.Config.Port
 
 	router := chi.NewRouter()
+
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8000"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
+
 	// Protected routes
 	router.Group(func(r chi.Router) {
 		// Seek, verify and validate JWT tokens
@@ -41,16 +44,12 @@ func main() {
 		// r.Use(jwtauth.Authenticator)
 
 		srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
-		r.Handle("/query", srv)
-		r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
-			_, claims, _ := jwtauth.FromContext(r.Context())
-			w.Write([]byte(fmt.Sprintf("protected area. hi %v", claims["user_id"])))
-		})
+		r.Handle("/v1", srv)
 	})
 
 	// Public routes
 	router.Group(func(r chi.Router) {
-		router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+		r.Handle("/", playground.Handler("GraphQL playground", "/v1"))
 	})
 
 	log.Printf("connect to http://localhost:%d/ for GraphQL playground", port)

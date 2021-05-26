@@ -3,7 +3,7 @@ name = stockdata.sql
 driver = sqlite3
 
 [web]
-port = 8080
+port = 4000
 
 [auth]
 jwt_secret = xxxxxxxxxxxxxxx
