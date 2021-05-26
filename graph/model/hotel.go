@@ -2,13 +2,14 @@ package model
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/dragoneena12/lapi-hotel-system/db"
 )
 
 func (c *Hotel) Create() error {
-	cmd := fmt.Sprintf("INSERT INTO %s (id, name, location, owner) VALUES (?, ?, ?, ?)", db.TableNameHotels)
-	_, err := db.DbConnection.Exec(cmd, c.ID, c.Name, c.Location, c.Owner)
+	cmd := fmt.Sprintf("INSERT INTO %s (id, name, location, owner, carbonAwards, fullereneAwards, carbonNanotubeAwards, grapheneAwards, diamondAwards) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", db.TableNameHotels)
+	_, err := db.DbConnection.Exec(cmd, c.ID, c.Name, c.Location, c.Owner, strings.Join(c.CarbonAwards[:], ","), strings.Join(c.FullereneAwards[:], ","), strings.Join(c.CarbonNanotubeAwards[:], ","), strings.Join(c.GrapheneAwards[:], ","), strings.Join(c.DiamondAwards[:], ","))
 	if err != nil {
 		return err
 	}
@@ -25,7 +26,13 @@ func GetAllHotel(limit int) (Hotels []*Hotel, err error) {
 
 	for rows.Next() {
 		var Hotel Hotel
-		rows.Scan(&Hotel.ID, &Hotel.Name, &Hotel.Location, &Hotel.Owner)
+		var ar = make([]string, 5)
+		rows.Scan(&Hotel.ID, &Hotel.Name, &Hotel.Location, &Hotel.Owner, &ar[0], &ar[1], &ar[2], &ar[3], &ar[4])
+		Hotel.CarbonAwards = strings.Split(ar[0], ",")
+		Hotel.FullereneAwards = strings.Split(ar[1], ",")
+		Hotel.CarbonNanotubeAwards = strings.Split(ar[2], ",")
+		Hotel.GrapheneAwards = strings.Split(ar[3], ",")
+		Hotel.DiamondAwards = strings.Split(ar[4], ",")
 		Hotels = append(Hotels, &Hotel)
 	}
 	return Hotels, nil

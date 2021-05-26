@@ -53,10 +53,12 @@ func main() {
 		}
 		roles = append(roles, "USER")
 		for _, r := range roles {
-			if role == r {
+			if role.String() == r.(string) {
 				return next(ctx)
 			}
 		}
+		fmt.Printf("%v\n", roles)
+		fmt.Printf("%v\n", role)
 		return nil, fmt.Errorf("access denied")
 
 	}

@@ -59,10 +59,15 @@ func (r *mutationResolver) AddHotel(ctx context.Context, input model.NewHotel) (
 		return nil, nil
 	}
 	hotel := &model.Hotel{
-		ID:       fmt.Sprintf("T%d", rand.Int()),
-		Name:     input.Name,
-		Location: input.Location,
-		Owner:    user,
+		ID:                   fmt.Sprintf("T%d", rand.Int()),
+		Name:                 input.Name,
+		Location:             input.Location,
+		Owner:                user,
+		CarbonAwards:         input.CarbonAwards,
+		FullereneAwards:      input.FullereneAwards,
+		CarbonNanotubeAwards: input.CarbonNanotubeAwards,
+		GrapheneAwards:       input.GrapheneAwards,
+		DiamondAwards:        input.DiamondAwards,
 	}
 	err := hotel.Create()
 	if err != nil {

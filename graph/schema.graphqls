@@ -25,6 +25,11 @@ type Hotel {
   name: String!
   location: String!
   owner: String!
+  carbonAwards: [String!]!
+  fullereneAwards: [String!]!
+  carbonNanotubeAwards: [String!]!
+  grapheneAwards: [String!]!
+  diamondAwards: [String!]!
 }
 
 type Query {
@@ -39,6 +44,11 @@ input check {
 input newHotel {
   name: String!
   location: String!
+  carbonAwards: [String!]!
+  fullereneAwards: [String!]!
+  carbonNanotubeAwards: [String!]!
+  grapheneAwards: [String!]!
+  diamondAwards: [String!]!
 }
 
 type Mutation {

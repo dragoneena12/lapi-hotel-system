@@ -48,10 +48,15 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Hotel struct {
-		ID       func(childComplexity int) int
-		Location func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Owner    func(childComplexity int) int
+		CarbonAwards         func(childComplexity int) int
+		CarbonNanotubeAwards func(childComplexity int) int
+		DiamondAwards        func(childComplexity int) int
+		FullereneAwards      func(childComplexity int) int
+		GrapheneAwards       func(childComplexity int) int
+		ID                   func(childComplexity int) int
+		Location             func(childComplexity int) int
+		Name                 func(childComplexity int) int
+		Owner                func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -101,6 +106,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Hotel.carbonAwards":
+		if e.complexity.Hotel.CarbonAwards == nil {
+			break
+		}
+
+		return e.complexity.Hotel.CarbonAwards(childComplexity), true
+
+	case "Hotel.carbonNanotubeAwards":
+		if e.complexity.Hotel.CarbonNanotubeAwards == nil {
+			break
+		}
+
+		return e.complexity.Hotel.CarbonNanotubeAwards(childComplexity), true
+
+	case "Hotel.diamondAwards":
+		if e.complexity.Hotel.DiamondAwards == nil {
+			break
+		}
+
+		return e.complexity.Hotel.DiamondAwards(childComplexity), true
+
+	case "Hotel.fullereneAwards":
+		if e.complexity.Hotel.FullereneAwards == nil {
+			break
+		}
+
+		return e.complexity.Hotel.FullereneAwards(childComplexity), true
+
+	case "Hotel.grapheneAwards":
+		if e.complexity.Hotel.GrapheneAwards == nil {
+			break
+		}
+
+		return e.complexity.Hotel.GrapheneAwards(childComplexity), true
 
 	case "Hotel.id":
 		if e.complexity.Hotel.ID == nil {
@@ -306,6 +346,11 @@ type Hotel {
   name: String!
   location: String!
   owner: String!
+  carbonAwards: [String!]!
+  fullereneAwards: [String!]!
+  carbonNanotubeAwards: [String!]!
+  grapheneAwards: [String!]!
+  diamondAwards: [String!]!
 }
 
 type Query {
@@ -320,6 +365,11 @@ input check {
 input newHotel {
   name: String!
   location: String!
+  carbonAwards: [String!]!
+  fullereneAwards: [String!]!
+  carbonNanotubeAwards: [String!]!
+  grapheneAwards: [String!]!
+  diamondAwards: [String!]!
 }
 
 type Mutation {
@@ -585,6 +635,181 @@ func (ec *executionContext) _Hotel_owner(ctx context.Context, field graphql.Coll
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Hotel_carbonAwards(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CarbonAwards, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Hotel_fullereneAwards(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FullereneAwards, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Hotel_carbonNanotubeAwards(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CarbonNanotubeAwards, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Hotel_grapheneAwards(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GrapheneAwards, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Hotel_diamondAwards(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DiamondAwards, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_checkin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2254,6 +2479,46 @@ func (ec *executionContext) unmarshalInputnewHotel(ctx context.Context, obj inte
 			if err != nil {
 				return it, err
 			}
+		case "carbonAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carbonAwards"))
+			it.CarbonAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "fullereneAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fullereneAwards"))
+			it.FullereneAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "carbonNanotubeAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carbonNanotubeAwards"))
+			it.CarbonNanotubeAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "grapheneAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("grapheneAwards"))
+			it.GrapheneAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "diamondAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("diamondAwards"))
+			it.DiamondAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -2296,6 +2561,31 @@ func (ec *executionContext) _Hotel(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "owner":
 			out.Values[i] = ec._Hotel_owner(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "carbonAwards":
+			out.Values[i] = ec._Hotel_carbonAwards(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "fullereneAwards":
+			out.Values[i] = ec._Hotel_fullereneAwards(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "carbonNanotubeAwards":
+			out.Values[i] = ec._Hotel_carbonNanotubeAwards(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "grapheneAwards":
+			out.Values[i] = ec._Hotel_grapheneAwards(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "diamondAwards":
+			out.Values[i] = ec._Hotel_diamondAwards(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2880,6 +3170,36 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

@@ -9,10 +9,15 @@ import (
 )
 
 type Hotel struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Location string `json:"location"`
-	Owner    string `json:"owner"`
+	ID                   string   `json:"id"`
+	Name                 string   `json:"name"`
+	Location             string   `json:"location"`
+	Owner                string   `json:"owner"`
+	CarbonAwards         []string `json:"carbonAwards"`
+	FullereneAwards      []string `json:"fullereneAwards"`
+	CarbonNanotubeAwards []string `json:"carbonNanotubeAwards"`
+	GrapheneAwards       []string `json:"grapheneAwards"`
+	DiamondAwards        []string `json:"diamondAwards"`
 }
 
 type Check struct {
@@ -20,8 +25,13 @@ type Check struct {
 }
 
 type NewHotel struct {
-	Name     string `json:"name"`
-	Location string `json:"location"`
+	Name                 string   `json:"name"`
+	Location             string   `json:"location"`
+	CarbonAwards         []string `json:"carbonAwards"`
+	FullereneAwards      []string `json:"fullereneAwards"`
+	CarbonNanotubeAwards []string `json:"carbonNanotubeAwards"`
+	GrapheneAwards       []string `json:"grapheneAwards"`
+	DiamondAwards        []string `json:"diamondAwards"`
 }
 
 type Role string

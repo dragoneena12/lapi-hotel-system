@@ -37,6 +37,11 @@ func init() {
             id STRING PRIMARY KEY NOT NULL,
             name STRING,
 						location STRING,
-						owner STRING)`, TableNameHotels)
+						owner STRING,
+						carbonAwards STRING,
+						fullereneAwards STRING,
+						carbonNanotubeAwards STRING,
+						grapheneAwards STRING,
+						diamondAwards STRING)`, TableNameHotels)
 	DbConnection.Exec(cmd)
 }
