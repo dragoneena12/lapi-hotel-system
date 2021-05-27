@@ -7,10 +7,11 @@ require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/go-chi/chi/v5 v5.0.3
 	github.com/go-chi/jwtauth/v5 v5.0.1
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/goccy/go-json v0.5.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
-	github.com/lestrrat-go/jwx v1.2.0 // indirect
+	github.com/lestrrat-go/jwx v1.2.0
 	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/rs/cors v1.6.0

@@ -8,6 +8,7 @@ import (
 )
 
 type ConfigList struct {
+	Debug     bool
 	DbName    string
 	SQLDriver string
 	Port      int
@@ -24,6 +25,7 @@ func init() {
 	}
 
 	Config = ConfigList{
+		Debug:     cfg.Section("debug").Key("debug").MustBool(),
 		DbName:    cfg.Section("db").Key("name").String(),
 		SQLDriver: cfg.Section("db").Key("driver").String(),
 		Port:      cfg.Section("web").Key("port").MustInt(),

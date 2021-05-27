@@ -1,3 +1,6 @@
+[debug]
+debug = true
+
 [db]
 name = stockdata.sql
 driver = sqlite3

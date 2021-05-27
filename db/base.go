@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/dragoneena12/lapi-hotel-system/config"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 )
 

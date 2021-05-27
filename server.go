@@ -30,11 +30,18 @@ func main() {
 
 	router := chi.NewRouter()
 
+	var origins []string
+	if config.Config.Debug {
+		origins = []string{"http://localhost:4000", "http://localhost:8000"}
+	} else {
+		origins = []string{"https://www.lapi.tokyo"}
+	}
+
 	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8000"},
+		AllowedOrigins:   origins,
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-		Debug:            true,
+		Debug:            config.Config.Debug,
 	}).Handler)
 	router.Use(jwtauth.Verifier(tokenAuth))
 
@@ -65,7 +72,10 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
 	router.Handle("/graphql", srv)
-	router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+
+	if config.Config.Debug {
+		router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	}
 
 	log.Printf("connect to http://localhost:%d/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Config.Port), router))
