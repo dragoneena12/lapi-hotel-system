@@ -71,12 +71,13 @@ func main() {
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
-	router.Handle("/graphql", srv)
+	router.Handle("/v1/graphql", srv)
 
 	if config.Config.Debug {
-		router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+		router.Handle("/", playground.Handler("GraphQL playground", "/v1/graphql"))
+		log.Printf("connect to http://localhost:%d/ for GraphQL playground", port)
 	}
 
-	log.Printf("connect to http://localhost:%d/ for GraphQL playground", port)
+	log.Println("Ready")
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Config.Port), router))
 }
