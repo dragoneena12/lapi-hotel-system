@@ -8,8 +8,8 @@ import (
 )
 
 func (c *Hotel) Create() error {
-	cmd := fmt.Sprintf("INSERT INTO %s (id, name, location, owner, carbonAwards, fullereneAwards, carbonNanotubeAwards, grapheneAwards, diamondAwards) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", db.TableNameHotels)
-	_, err := db.DbConnection.Exec(cmd, c.ID, c.Name, c.Location, c.Owner, strings.Join(c.CarbonAwards[:], ","), strings.Join(c.FullereneAwards[:], ","), strings.Join(c.CarbonNanotubeAwards[:], ","), strings.Join(c.GrapheneAwards[:], ","), strings.Join(c.DiamondAwards[:], ","))
+	cmd := fmt.Sprintf("INSERT INTO %s (name, location, owner, carbonAwards, fullereneAwards, carbonNanotubeAwards, grapheneAwards, diamondAwards) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", db.TableNameHotels)
+	_, err := db.DbConnection.Exec(cmd, c.Name, c.Location, c.Owner, strings.Join(c.CarbonAwards[:], ","), strings.Join(c.FullereneAwards[:], ","), strings.Join(c.CarbonNanotubeAwards[:], ","), strings.Join(c.GrapheneAwards[:], ","), strings.Join(c.DiamondAwards[:], ","))
 	if err != nil {
 		return err
 	}

@@ -16,8 +16,8 @@ type Stay struct {
 }
 
 func (c *Stay) Create() error {
-	cmd := fmt.Sprintf("INSERT INTO %s (id, hotel_id, checkin, checkout, user) VALUES (?, ?, ?, ?, ?)", db.TableNameStays)
-	_, err := db.DbConnection.Exec(cmd, c.ID, c.HotelId, c.Checkin, c.Checkout, c.User)
+	cmd := fmt.Sprintf("INSERT INTO %s (hotel_id, checkin, checkout, user) VALUES (?, ?, ?, ?)", db.TableNameStays)
+	_, err := db.DbConnection.Exec(cmd, c.HotelId, c.Checkin, c.Checkout, c.User)
 	if err != nil {
 		return err
 	}

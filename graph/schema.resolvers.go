@@ -5,8 +5,8 @@ package graph
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
-	"math/rand"
 	"time"
 
 	"github.com/dragoneena12/lapi-hotel-system/graph/generated"
@@ -21,14 +21,17 @@ func (r *mutationResolver) Checkin(ctx context.Context, input model.Check) (*mod
 		return nil, nil
 	}
 	stay, err := model.GetMostRecentStay(user)
+
 	if err != nil {
-		return stay, err
-	}
-	if stay.Checkout.IsZero() {
-		return nil, fmt.Errorf("already staying")
+		if err != sql.ErrNoRows {
+			return stay, err
+		}
+	} else {
+		if stay.Checkout.IsZero() {
+			return nil, fmt.Errorf("already staying")
+		}
 	}
 	stay = &model.Stay{
-		ID:       fmt.Sprintf("T%d", rand.Int()),
 		HotelId:  input.HotelID,
 		Checkin:  time.Now(),
 		Checkout: time.Time{},
@@ -69,7 +72,6 @@ func (r *mutationResolver) AddHotel(ctx context.Context, input model.NewHotel) (
 		return nil, nil
 	}
 	hotel := &model.Hotel{
-		ID:                   fmt.Sprintf("T%d", rand.Int()),
 		Name:                 input.Name,
 		Location:             input.Location,
 		Owner:                user,

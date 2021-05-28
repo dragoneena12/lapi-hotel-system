@@ -26,7 +26,7 @@ func init() {
 
 	cmd := fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %s (
-            id STRING PRIMARY KEY NOT NULL,
+            id INTEGER PRIMARY KEY NOT NULL,
             hotel_id STRING,
 						checkin DATETIME,
 						checkout DATETIME,
@@ -35,7 +35,7 @@ func init() {
 
 	cmd = fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %s (
-            id STRING PRIMARY KEY NOT NULL,
+            id INTEGER PRIMARY KEY NOT NULL,
             name STRING,
 						location STRING,
 						owner STRING,
