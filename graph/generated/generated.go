@@ -60,9 +60,10 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddHotel func(childComplexity int, input model.NewHotel) int
-		Checkin  func(childComplexity int, input model.Check) int
-		Checkout func(childComplexity int, input model.Check) int
+		AddHotel  func(childComplexity int, input model.NewHotel) int
+		Checkin   func(childComplexity int, input model.Check) int
+		Checkout  func(childComplexity int, input model.Check) int
+		EditHotel func(childComplexity int, input model.EditHotel) int
 	}
 
 	Query struct {
@@ -84,6 +85,7 @@ type MutationResolver interface {
 	Checkin(ctx context.Context, input model.Check) (*model.Stay, error)
 	Checkout(ctx context.Context, input model.Check) (*model.Stay, error)
 	AddHotel(ctx context.Context, input model.NewHotel) (*model.Hotel, error)
+	EditHotel(ctx context.Context, input model.EditHotel) (*model.Hotel, error)
 }
 type QueryResolver interface {
 	Stays(ctx context.Context) ([]*model.Stay, error)
@@ -207,6 +209,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Checkout(childComplexity, args["input"].(model.Check)), true
+
+	case "Mutation.editHotel":
+		if e.complexity.Mutation.EditHotel == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_editHotel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EditHotel(childComplexity, args["input"].(model.EditHotel)), true
 
 	case "Query.hotel":
 		if e.complexity.Query.Hotel == nil {
@@ -387,10 +401,22 @@ input newHotel {
   diamondAwards: [String!]!
 }
 
+input editHotel {
+  id: ID!
+  name: String!
+  location: String!
+  carbonAwards: [String!]!
+  fullereneAwards: [String!]!
+  carbonNanotubeAwards: [String!]!
+  grapheneAwards: [String!]!
+  diamondAwards: [String!]!
+}
+
 type Mutation {
   checkin(input: check!): Stay! @hasRole(role: USER)
   checkout(input: check!): Stay! @hasRole(role: USER)
   addHotel(input: newHotel!): Hotel! @hasRole(role: PARTNER)
+  editHotel(input: editHotel!): Hotel! @hasRole(role: PARTNER)
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -451,6 +477,21 @@ func (ec *executionContext) field_Mutation_checkout_args(ctx context.Context, ra
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNcheck2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐCheck(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_editHotel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EditHotel
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNeditHotel2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐEditHotel(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1001,6 +1042,72 @@ func (ec *executionContext) _Mutation_addHotel(ctx context.Context, field graphq
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().AddHotel(rctx, args["input"].(model.NewHotel))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "PARTNER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Hotel); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/dragoneena12/lapi-hotel-system/graph/model.Hotel`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Hotel)
+	fc.Result = res
+	return ec.marshalNHotel2ᚖgithubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐHotel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_editHotel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_editHotel_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().EditHotel(rctx, args["input"].(model.EditHotel))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "PARTNER")
@@ -2529,6 +2636,82 @@ func (ec *executionContext) unmarshalInputcheck(ctx context.Context, obj interfa
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputeditHotel(ctx context.Context, obj interface{}) (model.EditHotel, error) {
+	var it model.EditHotel
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "carbonAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carbonAwards"))
+			it.CarbonAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "fullereneAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fullereneAwards"))
+			it.FullereneAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "carbonNanotubeAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carbonNanotubeAwards"))
+			it.CarbonNanotubeAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "grapheneAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("grapheneAwards"))
+			it.GrapheneAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "diamondAwards":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("diamondAwards"))
+			it.DiamondAwards, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewHotel(ctx context.Context, obj interface{}) (model.NewHotel, error) {
 	var it model.NewHotel
 	var asMap = obj.(map[string]interface{})
@@ -2699,6 +2882,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "addHotel":
 			out.Values[i] = ec._Mutation_addHotel(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "editHotel":
+			out.Values[i] = ec._Mutation_editHotel(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3519,6 +3707,11 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 
 func (ec *executionContext) unmarshalNcheck2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐCheck(ctx context.Context, v interface{}) (model.Check, error) {
 	res, err := ec.unmarshalInputcheck(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNeditHotel2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐEditHotel(ctx context.Context, v interface{}) (model.EditHotel, error) {
+	res, err := ec.unmarshalInputeditHotel(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

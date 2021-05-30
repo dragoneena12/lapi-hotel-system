@@ -52,8 +52,20 @@ input newHotel {
   diamondAwards: [String!]!
 }
 
+input editHotel {
+  id: ID!
+  name: String!
+  location: String!
+  carbonAwards: [String!]!
+  fullereneAwards: [String!]!
+  carbonNanotubeAwards: [String!]!
+  grapheneAwards: [String!]!
+  diamondAwards: [String!]!
+}
+
 type Mutation {
   checkin(input: check!): Stay! @hasRole(role: USER)
   checkout(input: check!): Stay! @hasRole(role: USER)
   addHotel(input: newHotel!): Hotel! @hasRole(role: PARTNER)
+  editHotel(input: editHotel!): Hotel! @hasRole(role: PARTNER)
 }

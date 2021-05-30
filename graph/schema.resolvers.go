@@ -88,6 +88,37 @@ func (r *mutationResolver) AddHotel(ctx context.Context, input model.NewHotel) (
 	return hotel, nil
 }
 
+func (r *mutationResolver) EditHotel(ctx context.Context, input model.EditHotel) (*model.Hotel, error) {
+	_, claims, _ := jwtauth.FromContext(ctx)
+	user, ok := claims["sub"].(string)
+	if !ok {
+		return nil, nil
+	}
+	hotel, err := model.GetHotelById(input.ID)
+	if err != nil {
+		return hotel, err
+	}
+	if hotel.Owner != user {
+		return nil, fmt.Errorf("you are not owner")
+	}
+	newHotel := &model.Hotel{
+		ID:                   input.ID,
+		Name:                 input.Name,
+		Location:             input.Location,
+		Owner:                user,
+		CarbonAwards:         input.CarbonAwards,
+		FullereneAwards:      input.FullereneAwards,
+		CarbonNanotubeAwards: input.CarbonNanotubeAwards,
+		GrapheneAwards:       input.GrapheneAwards,
+		DiamondAwards:        input.DiamondAwards,
+	}
+	err = newHotel.Save()
+	if err != nil {
+		return newHotel, err
+	}
+	return newHotel, nil
+}
+
 func (r *queryResolver) Stays(ctx context.Context) ([]*model.Stay, error) {
 	_, claims, _ := jwtauth.FromContext(ctx)
 	user, ok := claims["sub"].(string)

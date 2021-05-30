@@ -16,6 +16,15 @@ func (c *Hotel) Create() error {
 	return err
 }
 
+func (c *Hotel) Save() error {
+	cmd := fmt.Sprintf("UPDATE %s SET name = ?, location = ?, owner = ?, carbonAwards = ?, fullereneAwards = ?, carbonNanotubeAwards = ?, grapheneAwards = ?, diamondAwards = ? WHERE id = ?", db.TableNameHotels)
+	_, err := db.DbConnection.Exec(cmd, c.Name, c.Location, c.Owner, strings.Join(c.CarbonAwards[:], ","), strings.Join(c.FullereneAwards[:], ","), strings.Join(c.CarbonNanotubeAwards[:], ","), strings.Join(c.GrapheneAwards[:], ","), strings.Join(c.DiamondAwards[:], ","), c.ID)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
 func GetAllHotel(limit int) (Hotels []*Hotel, err error) {
 	cmd := fmt.Sprintf(`SELECT * FROM %s ORDER BY id ASC LIMIT ?`, db.TableNameHotels)
 	rows, err := db.DbConnection.Query(cmd, limit)

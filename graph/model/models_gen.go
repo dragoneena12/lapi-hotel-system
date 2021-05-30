@@ -24,6 +24,17 @@ type Check struct {
 	HotelID string `json:"hotelId"`
 }
 
+type EditHotel struct {
+	ID                   string   `json:"id"`
+	Name                 string   `json:"name"`
+	Location             string   `json:"location"`
+	CarbonAwards         []string `json:"carbonAwards"`
+	FullereneAwards      []string `json:"fullereneAwards"`
+	CarbonNanotubeAwards []string `json:"carbonNanotubeAwards"`
+	GrapheneAwards       []string `json:"grapheneAwards"`
+	DiamondAwards        []string `json:"diamondAwards"`
+}
+
 type NewHotel struct {
 	Name                 string   `json:"name"`
 	Location             string   `json:"location"`
