@@ -35,6 +35,7 @@ type Hotel {
 type Query {
   stays: [Stay!]! @hasRole(role: USER)
   hotels: [Hotel!]!
+  hotel(id: ID!): Hotel!
 }
 
 input check {

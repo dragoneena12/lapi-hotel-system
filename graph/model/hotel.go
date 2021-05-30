@@ -37,3 +37,20 @@ func GetAllHotel(limit int) (Hotels []*Hotel, err error) {
 	}
 	return Hotels, nil
 }
+
+func GetHotelById(id string) (*Hotel, error) {
+	cmd := fmt.Sprintf(`SELECT * FROM %s WHERE id = ?`, db.TableNameHotels)
+	row := db.DbConnection.QueryRow(cmd, id)
+	var ar = make([]string, 5)
+	var Hotel Hotel
+	err := row.Scan(&Hotel.ID, &Hotel.Name, &Hotel.Location, &Hotel.Owner, &ar[0], &ar[1], &ar[2], &ar[3], &ar[4])
+	if err != nil {
+		return nil, err
+	}
+	Hotel.CarbonAwards = strings.Split(ar[0], ",")
+	Hotel.FullereneAwards = strings.Split(ar[1], ",")
+	Hotel.CarbonNanotubeAwards = strings.Split(ar[2], ",")
+	Hotel.GrapheneAwards = strings.Split(ar[3], ",")
+	Hotel.DiamondAwards = strings.Split(ar[4], ",")
+	return &Hotel, nil
+}

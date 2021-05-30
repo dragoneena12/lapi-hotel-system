@@ -103,6 +103,16 @@ func (r *queryResolver) Hotels(ctx context.Context) ([]*model.Hotel, error) {
 	return hotels, err
 }
 
+func (r *queryResolver) Hotel(ctx context.Context, id string) (*model.Hotel, error) {
+	hotel, err := model.GetHotelById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return hotel, nil
+}
+
 func (r *stayResolver) Hotel(ctx context.Context, obj *model.Stay) (*model.Hotel, error) {
 	return &model.Hotel{ID: obj.HotelId, Name: "Hotel " + obj.HotelId}, nil
 }
