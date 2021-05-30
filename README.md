@@ -18,6 +18,6 @@ sql-migrate up -env="development"
 
 prod migrate
 ```
-kubectl port-forward -n lapi-hotel-system mariadb-69bdf58589-zn6jf 3307:3306
+kubectl port-forward -n lapi-hotel-system <pod-name> 3306:3306
 sql-migrate up -env="production"
 ```
