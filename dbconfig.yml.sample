@@ -1,0 +1,8 @@
+development:
+  dialect: sqlite3
+  datasource: stockdata.sql
+  dir: migrations/sqlite3
+production:
+  dialect: mysql
+  datasource: root:password@tcp(localhost:3306)/lapi_hotel_system?parseTime=true
+  dir: migrations/mysql

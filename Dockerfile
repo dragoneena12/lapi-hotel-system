@@ -9,6 +9,6 @@ RUN make
 
 # runtime image
 FROM alpine
-COPY --from=builder /root/app /app/app
+COPY --from=builder /root/app /app
 EXPOSE 4000
-ENTRYPOINT ["/app/app"]
+ENTRYPOINT ["/app"]
