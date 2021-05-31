@@ -32,14 +32,20 @@ type Hotel {
   diamondAwards: [String!]!
 }
 
+type HotelKey {
+  key: String!
+}
+
 type Query {
   stays: [Stay!]! @hasRole(role: USER)
   hotels: [Hotel!]!
   hotel(id: ID!): Hotel!
+  hotelKey(id: ID!): HotelKey! @hasRole(role: USER)
 }
 
 input check {
   hotelId: ID!
+  otp: String!
 }
 
 input newHotel {

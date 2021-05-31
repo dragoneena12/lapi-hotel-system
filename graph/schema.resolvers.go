@@ -12,6 +12,8 @@ import (
 	"github.com/dragoneena12/lapi-hotel-system/graph/generated"
 	"github.com/dragoneena12/lapi-hotel-system/graph/model"
 	jwtauth "github.com/go-chi/jwtauth/v5"
+	"github.com/pquerna/otp"
+	"github.com/pquerna/otp/totp"
 )
 
 func (r *mutationResolver) Checkin(ctx context.Context, input model.Check) (*model.Stay, error) {
@@ -21,15 +23,26 @@ func (r *mutationResolver) Checkin(ctx context.Context, input model.Check) (*mod
 		return nil, nil
 	}
 	stay, err := model.GetMostRecentStay(user)
-
 	if err != nil {
 		if err != sql.ErrNoRows {
-			return stay, err
+			return nil, err
 		}
 	} else {
 		if stay.Checkout.IsZero() {
 			return nil, fmt.Errorf("already staying")
 		}
+	}
+	hotel, err := model.GetHotelById(input.HotelID)
+	if err != nil {
+		return nil, err
+	}
+	key, err := otp.NewKeyFromURL(hotel.Key)
+	if err != nil {
+		return nil, err
+	}
+	valid := totp.Validate(input.Otp, key.Secret())
+	if !valid {
+		return nil, fmt.Errorf("provided OTP is not correct")
 	}
 	stay = &model.Stay{
 		HotelId:  input.HotelID,
@@ -57,6 +70,21 @@ func (r *mutationResolver) Checkout(ctx context.Context, input model.Check) (*mo
 	if !stay.Checkout.IsZero() {
 		return nil, fmt.Errorf("no stay")
 	}
+	hotel, err := model.GetHotelById(input.HotelID)
+	if err != nil {
+		return nil, err
+	}
+	if hotel.ID != input.HotelID {
+		return nil, fmt.Errorf("tried to check out wrong hotel")
+	}
+	key, err := otp.NewKeyFromURL(hotel.Key)
+	if err != nil {
+		return nil, err
+	}
+	valid := totp.Validate(input.Otp, key.Secret())
+	if !valid {
+		return nil, fmt.Errorf("provided OTP is not correct")
+	}
 	stay.Checkout = time.Now()
 	err = stay.Save()
 	if err != nil {
@@ -71,6 +99,14 @@ func (r *mutationResolver) AddHotel(ctx context.Context, input model.NewHotel) (
 	if !ok {
 		return nil, nil
 	}
+	key, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      "lapi.tokyo",
+		AccountName: input.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	hotel := &model.Hotel{
 		Name:                 input.Name,
 		Location:             input.Location,
@@ -80,8 +116,9 @@ func (r *mutationResolver) AddHotel(ctx context.Context, input model.NewHotel) (
 		CarbonNanotubeAwards: input.CarbonNanotubeAwards,
 		GrapheneAwards:       input.GrapheneAwards,
 		DiamondAwards:        input.DiamondAwards,
+		Key:                  key.URL(),
 	}
-	err := hotel.Create()
+	err = hotel.Create()
 	if err != nil {
 		return hotel, err
 	}
@@ -111,6 +148,7 @@ func (r *mutationResolver) EditHotel(ctx context.Context, input model.EditHotel)
 		CarbonNanotubeAwards: input.CarbonNanotubeAwards,
 		GrapheneAwards:       input.GrapheneAwards,
 		DiamondAwards:        input.DiamondAwards,
+		Key:                  hotel.Key,
 	}
 	err = newHotel.Save()
 	if err != nil {
@@ -136,12 +174,30 @@ func (r *queryResolver) Hotels(ctx context.Context) ([]*model.Hotel, error) {
 
 func (r *queryResolver) Hotel(ctx context.Context, id string) (*model.Hotel, error) {
 	hotel, err := model.GetHotelById(id)
-
 	if err != nil {
 		return nil, err
 	}
 
 	return hotel, nil
+}
+
+func (r *queryResolver) HotelKey(ctx context.Context, id string) (*model.HotelKey, error) {
+	_, claims, _ := jwtauth.FromContext(ctx)
+	user, ok := claims["sub"].(string)
+	if !ok {
+		return nil, nil
+	}
+	hotel, err := model.GetHotelById(id)
+	if err != nil {
+		return nil, err
+	}
+	if hotel.Owner != user {
+		return nil, fmt.Errorf("you are not owner")
+	}
+	hotelKey := &model.HotelKey{
+		Key: hotel.Key,
+	}
+	return hotelKey, nil
 }
 
 func (r *stayResolver) Hotel(ctx context.Context, obj *model.Stay) (*model.Hotel, error) {

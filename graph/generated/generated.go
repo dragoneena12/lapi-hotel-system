@@ -59,6 +59,10 @@ type ComplexityRoot struct {
 		Owner                func(childComplexity int) int
 	}
 
+	HotelKey struct {
+		Key func(childComplexity int) int
+	}
+
 	Mutation struct {
 		AddHotel  func(childComplexity int, input model.NewHotel) int
 		Checkin   func(childComplexity int, input model.Check) int
@@ -67,9 +71,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Hotel  func(childComplexity int, id string) int
-		Hotels func(childComplexity int) int
-		Stays  func(childComplexity int) int
+		Hotel    func(childComplexity int, id string) int
+		HotelKey func(childComplexity int, id string) int
+		Hotels   func(childComplexity int) int
+		Stays    func(childComplexity int) int
 	}
 
 	Stay struct {
@@ -91,6 +96,7 @@ type QueryResolver interface {
 	Stays(ctx context.Context) ([]*model.Stay, error)
 	Hotels(ctx context.Context) ([]*model.Hotel, error)
 	Hotel(ctx context.Context, id string) (*model.Hotel, error)
+	HotelKey(ctx context.Context, id string) (*model.HotelKey, error)
 }
 type StayResolver interface {
 	Hotel(ctx context.Context, obj *model.Stay) (*model.Hotel, error)
@@ -174,6 +180,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Hotel.Owner(childComplexity), true
 
+	case "HotelKey.key":
+		if e.complexity.HotelKey.Key == nil {
+			break
+		}
+
+		return e.complexity.HotelKey.Key(childComplexity), true
+
 	case "Mutation.addHotel":
 		if e.complexity.Mutation.AddHotel == nil {
 			break
@@ -233,6 +246,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Hotel(childComplexity, args["id"].(string)), true
+
+	case "Query.hotelKey":
+		if e.complexity.Query.HotelKey == nil {
+			break
+		}
+
+		args, err := ec.field_Query_hotelKey_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.HotelKey(childComplexity, args["id"].(string)), true
 
 	case "Query.hotels":
 		if e.complexity.Query.Hotels == nil {
@@ -381,14 +406,20 @@ type Hotel {
   diamondAwards: [String!]!
 }
 
+type HotelKey {
+  key: String!
+}
+
 type Query {
   stays: [Stay!]! @hasRole(role: USER)
   hotels: [Hotel!]!
   hotel(id: ID!): Hotel!
+  hotelKey(id: ID!): HotelKey! @hasRole(role: USER)
 }
 
 input check {
   hotelId: ID!
+  otp: String!
 }
 
 input newHotel {
@@ -512,6 +543,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_hotelKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -881,6 +927,41 @@ func (ec *executionContext) _Hotel_diamondAwards(ctx context.Context, field grap
 	res := resTmp.([]string)
 	fc.Result = res
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _HotelKey_key(ctx context.Context, field graphql.CollectedField, obj *model.HotelKey) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "HotelKey",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_checkin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1281,6 +1362,72 @@ func (ec *executionContext) _Query_hotel(ctx context.Context, field graphql.Coll
 	res := resTmp.(*model.Hotel)
 	fc.Result = res
 	return ec.marshalNHotel2ᚖgithubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐHotel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_hotelKey(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_hotelKey_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().HotelKey(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "USER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.HotelKey); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/dragoneena12/lapi-hotel-system/graph/model.HotelKey`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.HotelKey)
+	fc.Result = res
+	return ec.marshalNHotelKey2ᚖgithubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐHotelKey(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2630,6 +2777,14 @@ func (ec *executionContext) unmarshalInputcheck(ctx context.Context, obj interfa
 			if err != nil {
 				return it, err
 			}
+		case "otp":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("otp"))
+			it.Otp, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -2855,6 +3010,33 @@ func (ec *executionContext) _Hotel(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var hotelKeyImplementors = []string{"HotelKey"}
+
+func (ec *executionContext) _HotelKey(ctx context.Context, sel ast.SelectionSet, obj *model.HotelKey) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, hotelKeyImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("HotelKey")
+		case "key":
+			out.Values[i] = ec._HotelKey_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2953,6 +3135,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_hotel(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "hotelKey":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_hotelKey(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3353,6 +3549,20 @@ func (ec *executionContext) marshalNHotel2ᚖgithubᚗcomᚋdragoneena12ᚋlapi�
 		return graphql.Null
 	}
 	return ec._Hotel(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNHotelKey2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐHotelKey(ctx context.Context, sel ast.SelectionSet, v model.HotelKey) graphql.Marshaler {
+	return ec._HotelKey(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNHotelKey2ᚖgithubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐHotelKey(ctx context.Context, sel ast.SelectionSet, v *model.HotelKey) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._HotelKey(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
