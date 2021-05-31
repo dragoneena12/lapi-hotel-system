@@ -71,10 +71,11 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Hotel    func(childComplexity int, id string) int
-		HotelKey func(childComplexity int, id string) int
-		Hotels   func(childComplexity int) int
-		Stays    func(childComplexity int) int
+		Hotel     func(childComplexity int, id string) int
+		HotelKey  func(childComplexity int, id string) int
+		Hotels    func(childComplexity int) int
+		StayCount func(childComplexity int) int
+		Stays     func(childComplexity int) int
 	}
 
 	Stay struct {
@@ -94,6 +95,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Stays(ctx context.Context) ([]*model.Stay, error)
+	StayCount(ctx context.Context) (int, error)
 	Hotels(ctx context.Context) ([]*model.Hotel, error)
 	Hotel(ctx context.Context, id string) (*model.Hotel, error)
 	HotelKey(ctx context.Context, id string) (*model.HotelKey, error)
@@ -266,6 +268,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Hotels(childComplexity), true
 
+	case "Query.stayCount":
+		if e.complexity.Query.StayCount == nil {
+			break
+		}
+
+		return e.complexity.Query.StayCount(childComplexity), true
+
 	case "Query.stays":
 		if e.complexity.Query.Stays == nil {
 			break
@@ -412,6 +421,7 @@ type HotelKey {
 
 type Query {
   stays: [Stay!]! @hasRole(role: USER)
+  stayCount: Int! @hasRole(role: USER)
   hotels: [Hotel!]!
   hotel(id: ID!): Hotel!
   hotelKey(id: ID!): HotelKey! @hasRole(role: USER)
@@ -1285,6 +1295,65 @@ func (ec *executionContext) _Query_stays(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*model.Stay)
 	fc.Result = res
 	return ec.marshalNStay2ᚕᚖgithubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐStayᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_stayCount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().StayCount(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋdragoneena12ᚋlapiᚑhotelᚑsystemᚋgraphᚋmodelᚐRole(ctx, "USER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(int); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be int`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_hotels(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3112,6 +3181,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "stayCount":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_stayCount(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "hotels":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -3572,6 +3655,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

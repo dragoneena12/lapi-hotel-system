@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/dragoneena12/lapi-hotel-system/graph/generated"
@@ -133,7 +134,7 @@ func (r *mutationResolver) EditHotel(ctx context.Context, input model.EditHotel)
 	}
 	hotel, err := model.GetHotelById(input.ID)
 	if err != nil {
-		return hotel, err
+		return nil, err
 	}
 	if hotel.Owner != user {
 		return nil, fmt.Errorf("you are not owner")
@@ -163,12 +164,35 @@ func (r *queryResolver) Stays(ctx context.Context) ([]*model.Stay, error) {
 	if !ok {
 		return nil, nil
 	}
-	stays, err := model.GetAllStay(user, 100)
-	return stays, err
+	stays, err := model.GetAllStay(user, 1000)
+	if err != nil {
+		return nil, err
+	}
+	return stays, nil
+}
+
+func (r *queryResolver) StayCount(ctx context.Context) (int, error) {
+	_, claims, _ := jwtauth.FromContext(ctx)
+	user, ok := claims["sub"].(string)
+	if !ok {
+		return 0, nil
+	}
+	stays, err := model.GetAllStay(user, 1000)
+	if err != nil {
+		return 0, err
+	}
+	var stayCount int
+	for _, stay := range stays {
+		if stay.Checkout.IsZero() {
+			continue
+		}
+		stayCount += int(math.Ceil(float64(stay.Checkout.Unix()-stay.Checkin.Unix()) / 60 / 60 / 24))
+	}
+	return stayCount, nil
 }
 
 func (r *queryResolver) Hotels(ctx context.Context) ([]*model.Hotel, error) {
-	hotels, err := model.GetAllHotel(100)
+	hotels, err := model.GetAllHotel(1000)
 	return hotels, err
 }
 

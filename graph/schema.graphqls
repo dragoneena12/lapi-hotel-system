@@ -38,6 +38,7 @@ type HotelKey {
 
 type Query {
   stays: [Stay!]! @hasRole(role: USER)
+  stayCount: Int! @hasRole(role: USER)
   hotels: [Hotel!]!
   hotel(id: ID!): Hotel!
   hotelKey(id: ID!): HotelKey! @hasRole(role: USER)
