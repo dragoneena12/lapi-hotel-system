@@ -225,7 +225,11 @@ func (r *queryResolver) HotelKey(ctx context.Context, id string) (*model.HotelKe
 }
 
 func (r *stayResolver) Hotel(ctx context.Context, obj *model.Stay) (*model.Hotel, error) {
-	return &model.Hotel{ID: obj.HotelId, Name: "Hotel " + obj.HotelId}, nil
+	hotel, err := model.GetHotelById(obj.HotelId)
+	if err != nil {
+		return nil, err
+	}
+	return hotel, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
