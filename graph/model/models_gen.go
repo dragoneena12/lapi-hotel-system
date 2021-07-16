@@ -13,8 +13,8 @@ type HotelKey struct {
 }
 
 type Check struct {
-	HotelID string `json:"hotelId"`
-	Otp     string `json:"otp"`
+	HotelID string  `json:"hotelId"`
+	Otp     *string `json:"otp"`
 }
 
 type EditHotel struct {

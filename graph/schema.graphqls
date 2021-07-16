@@ -46,7 +46,7 @@ type Query {
 
 input check {
   hotelId: ID!
-  otp: String!
+  otp: String
 }
 
 input newHotel {

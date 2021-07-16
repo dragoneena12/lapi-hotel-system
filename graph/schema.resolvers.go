@@ -41,7 +41,7 @@ func (r *mutationResolver) Checkin(ctx context.Context, input model.Check) (*mod
 	if err != nil {
 		return nil, err
 	}
-	valid := totp.Validate(input.Otp, key.Secret())
+	valid := totp.Validate(*input.Otp, key.Secret())
 	if !valid {
 		return nil, fmt.Errorf("provided OTP is not correct")
 	}
@@ -78,14 +78,16 @@ func (r *mutationResolver) Checkout(ctx context.Context, input model.Check) (*mo
 	if hotel.ID != input.HotelID {
 		return nil, fmt.Errorf("tried to check out wrong hotel")
 	}
-	key, err := otp.NewKeyFromURL(hotel.Key)
-	if err != nil {
-		return nil, err
-	}
-	valid := totp.Validate(input.Otp, key.Secret())
-	if !valid {
-		return nil, fmt.Errorf("provided OTP is not correct")
-	}
+	// チェックアウト時はOTPを要求しない
+	//
+	// key, err := otp.NewKeyFromURL(hotel.Key)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// valid := totp.Validate(input.Otp, key.Secret())
+	// if !valid {
+	// 	return nil, fmt.Errorf("provided OTP is not correct")
+	// }
 	stay.Checkout = time.Now()
 	err = stay.Save()
 	if err != nil {

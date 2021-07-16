@@ -429,7 +429,7 @@ type Query {
 
 input check {
   hotelId: ID!
-  otp: String!
+  otp: String
 }
 
 input newHotel {
@@ -2850,7 +2850,7 @@ func (ec *executionContext) unmarshalInputcheck(ctx context.Context, obj interfa
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("otp"))
-			it.Otp, err = ec.unmarshalNString2string(ctx, v)
+			it.Otp, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
