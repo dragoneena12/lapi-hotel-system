@@ -6,15 +6,41 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
+
+type Hotel struct {
+	ID                   string   `json:"id"`
+	OwnerID              string   `json:"ownerID"`
+	Name                 string   `json:"name"`
+	Location             string   `json:"location"`
+	CarbonAwards         []string `json:"carbonAwards"`
+	FullereneAwards      []string `json:"fullereneAwards"`
+	CarbonNanotubeAwards []string `json:"carbonNanotubeAwards"`
+	GrapheneAwards       []string `json:"grapheneAwards"`
+	DiamondAwards        []string `json:"diamondAwards"`
+}
 
 type HotelKey struct {
 	Key string `json:"key"`
 }
 
+type Mutation struct {
+}
+
+type Query struct {
+}
+
+type Stay struct {
+	ID          string    `json:"id"`
+	HotelID     string    `json:"hotelID"`
+	UserID      string    `json:"userID"`
+	CheckinTime time.Time `json:"checkinTime"`
+}
+
 type Check struct {
-	HotelID string  `json:"hotelId"`
-	Otp     *string `json:"otp"`
+	HotelID string `json:"hotelID"`
+	Otp     string `json:"otp"`
 }
 
 type EditHotel struct {

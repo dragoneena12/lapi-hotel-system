@@ -1,34 +1,33 @@
 package config
 
 import (
-	"log"
 	"os"
-
-	"gopkg.in/ini.v1"
 )
 
-type ConfigList struct {
+type Config struct {
 	Debug     bool
 	DbName    string
 	SQLDriver string
-	Port      int
+	Port      string
 	JWTSecret string
 }
 
-var Config ConfigList
-
-func init() {
-	cfg, err := ini.Load("config.ini")
-	if err != nil {
-		log.Printf("Failed to read file: %v", err)
-		os.Exit(1)
+func NewConfig() *Config {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
-
-	Config = ConfigList{
-		Debug:     cfg.Section("debug").Key("debug").MustBool(),
-		DbName:    cfg.Section("db").Key("name").String(),
-		SQLDriver: cfg.Section("db").Key("driver").String(),
-		Port:      cfg.Section("web").Key("port").MustInt(),
-		JWTSecret: cfg.Section("auth").Key("jwt_secret").String(),
+	if os.Getenv("SQL_DRIVER") == "" {
+		os.Setenv("SQL_DRIVER", "sqlite3")
+	}
+	if os.Getenv("DB_NAME") == "" {
+		os.Setenv("DB_NAME", "development.db")
+	}
+	return &Config{
+		Debug:     os.Getenv("DEBUG") == "true",
+		SQLDriver: os.Getenv("SQL_DRIVER"),
+		DbName:    os.Getenv("DB_NAME"),
+		Port:      port,
+		JWTSecret: os.Getenv("JWT_SECRET"),
 	}
 }

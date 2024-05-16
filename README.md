@@ -18,6 +18,7 @@ sql-migrate status
 
 dev migrate
 ```
+sql-migrate up -env="test"
 sql-migrate up -env="development"
 ```
 

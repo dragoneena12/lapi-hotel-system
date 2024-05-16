@@ -14,17 +14,16 @@ scalar DateTime
 
 type Stay {
   id: ID!
-  hotel: Hotel!
-  checkin: DateTime!
-  checkout: DateTime!
-  user: String!
+  hotelID: ID!
+  userID: ID!
+  checkinTime: DateTime!
 }
 
 type Hotel {
   id: ID!
+  ownerID: ID!
   name: String!
   location: String!
-  owner: String!
   carbonAwards: [String!]!
   fullereneAwards: [String!]!
   carbonNanotubeAwards: [String!]!
@@ -45,8 +44,8 @@ type Query {
 }
 
 input check {
-  hotelId: ID!
-  otp: String
+  hotelID: ID!
+  otp: String!
 }
 
 input newHotel {
@@ -72,7 +71,6 @@ input editHotel {
 
 type Mutation {
   checkin(input: check!): Stay! @hasRole(role: USER)
-  checkout(input: check!): Stay! @hasRole(role: USER)
   addHotel(input: newHotel!): Hotel! @hasRole(role: PARTNER)
   editHotel(input: editHotel!): Hotel! @hasRole(role: PARTNER)
 }

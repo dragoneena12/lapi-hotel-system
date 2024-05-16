@@ -1,14 +1,10 @@
-FROM golang:1.16 as builder
+FROM golang:1.22 as builder
 
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=arm64
-WORKDIR /root
+WORKDIR /work
 COPY . .
-RUN make
+RUN CGO_ENABLED=0 go build -o app
 
 # runtime image
-FROM alpine
-COPY --from=builder /root/app /app
-EXPOSE 4000
+FROM gcr.io/distroless/static-debian12
+COPY --from=builder /work/app /app
 ENTRYPOINT ["/app"]
