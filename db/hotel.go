@@ -39,7 +39,7 @@ func (r *HotelRepository) Update(hotel domain.Hotel) error {
 }
 
 func (r *HotelRepository) List(limit int) ([]*domain.Hotel, error) {
-	cmd := fmt.Sprintf(`SELECT * FROM %s ORDER BY id ASC LIMIT ?`, TableNameHotels)
+	cmd := fmt.Sprintf(`SELECT id, owner_id, name, location, carbon_awards, fullerene_awards, carbon_nanotube_awards, graphene_awards, diamond_awards FROM %s ORDER BY id ASC LIMIT ?`, TableNameHotels)
 	rows, err := r.db.Query(cmd, limit)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get hotels: %w", err)

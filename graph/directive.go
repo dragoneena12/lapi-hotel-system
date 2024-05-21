@@ -17,7 +17,7 @@ func newDirective(hasRole controller.HasRole) *directive {
 	return &directive{HasRole: func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (interface{}, error) {
 		ok, err := hasRole(ctx, role.String())
 		if err != nil {
-			return nil, fmt.Errorf("failed to get roles")
+			return nil, fmt.Errorf("failed to get roles: %w", err)
 		}
 		if !ok {
 			return nil, fmt.Errorf("role not allowed")

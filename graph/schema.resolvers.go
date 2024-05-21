@@ -58,6 +58,7 @@ func (r *mutationResolver) EditHotel(ctx context.Context, input model.EditHotel)
 		return nil, fmt.Errorf("failed to get user ID: %w", err)
 	}
 	updatedHotel, err := r.hotelController.Edit(userID, domain.Hotel{
+		ID:                   input.ID,
 		Name:                 input.Name,
 		Location:             input.Location,
 		CarbonAwards:         input.CarbonAwards,

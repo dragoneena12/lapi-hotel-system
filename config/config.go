@@ -15,7 +15,7 @@ type Config struct {
 func NewConfig() *Config {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "4000"
 	}
 	if os.Getenv("SQL_DRIVER") == "" {
 		os.Setenv("SQL_DRIVER", "sqlite3")

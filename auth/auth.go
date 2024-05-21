@@ -32,7 +32,7 @@ func JWTHasRole(ctx context.Context, requestedRole string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("failed to get claims")
 	}
-	roles, ok := claims["roles"].([]string)
+	roles, ok := claims["https://lapi.tokyo/claims/roles"].([]interface{})
 	if !ok {
 		return false, fmt.Errorf("failed to get roles")
 	}

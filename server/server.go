@@ -27,7 +27,7 @@ func (s *Server) Start() error {
 
 	var origins []string
 	if s.debug {
-		origins = []string{fmt.Sprintf("http://localhost:%s", s.port)}
+		origins = []string{"http://localhost:8000", "http://localhost:4000"}
 	} else {
 		origins = []string{"https://www.lapi.tokyo"}
 	}
