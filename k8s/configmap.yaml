@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: lapi-hotel-system
-data:
-  DB_NAME: /data/production.db

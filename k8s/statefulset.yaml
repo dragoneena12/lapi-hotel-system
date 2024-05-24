@@ -26,6 +26,9 @@ spec:
         ports:
         - containerPort: 4000
           name: http
+        env:
+        - name: DB_NAME
+          value: /data/production.db
         volumeMounts:
         - name: data
           mountPath: /data
