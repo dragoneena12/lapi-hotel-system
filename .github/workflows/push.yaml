@@ -21,13 +21,13 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: docker/lapi-hotel-system/Dockerfile
+          file: docker/lapi-hotel-system/Dockerfile
           push: true
           tags: dragoneena12/lapi-hotel-system:latest
       - name: Build and push init container
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: docker/init/Dockerfile
+          file: docker/init/Dockerfile
           push: true
           tags: dragoneena12/lapi-hotel-system-init:latest
