@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lapi-hotel-system
+spec:
+  rules:
+  - host: api.lapi.tokyo
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lapi-hotel-system
+            port:
+              number: 4000

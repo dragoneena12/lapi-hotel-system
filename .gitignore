@@ -15,5 +15,3 @@
 # vendor/
 
 *.db
-config.ini
-dbconfig.yml

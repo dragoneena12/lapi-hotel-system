@@ -21,9 +21,3 @@ dev migrate
 sql-migrate up -env="test"
 sql-migrate up -env="development"
 ```
-
-prod migrate
-```
-kubectl port-forward -n lapi-hotel-system <pod-name> 3306:3306
-sql-migrate up -env="production"
-```
