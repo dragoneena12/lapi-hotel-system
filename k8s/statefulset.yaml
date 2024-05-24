@@ -16,7 +16,7 @@ spec:
       initContainers:
       - name: init-db
         image: dragoneena12/lapi-hotel-system-init:latest
-        command: ["up", "-env=production"]
+        args: ["up", "-env=production"]
         volumeMounts:
         - name: data
           mountPath: /data
