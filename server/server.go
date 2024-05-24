@@ -29,7 +29,7 @@ func (s *Server) Start() error {
 	if s.debug {
 		origins = []string{"http://localhost:8000", "http://localhost:4000"}
 	} else {
-		origins = []string{"https://www.lapi.tokyo"}
+		origins = []string{"https://lapi.tokyo"}
 	}
 
 	router.Use(cors.New(cors.Options{
