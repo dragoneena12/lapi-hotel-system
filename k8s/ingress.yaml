@@ -2,6 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: lapi-hotel-system
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
 spec:
   rules:
   - host: api.lapi.tokyo
@@ -14,3 +16,7 @@ spec:
             name: lapi-hotel-system
             port:
               number: 4000
+  tls:  
+  - hosts:
+    - api.lapi.tokyo
+    secretName: lapi-hotel-system-tls
