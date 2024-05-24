@@ -5,6 +5,6 @@ COPY . .
 RUN go build -o app
 
 # runtime image
-FROM gcr.io/distroless/static-debian12
+FROM gcr.io/distroless/base
 COPY --from=builder /work/app /app
 ENTRYPOINT ["/app"]
