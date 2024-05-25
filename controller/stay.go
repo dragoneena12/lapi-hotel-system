@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/dragoneena12/lapi-hotel-system/controller/repository"
@@ -58,6 +59,7 @@ func (c *stayController) Checkin(stay domain.Stay, passcode string) (*domain.Sta
 	if err != nil {
 		return nil, fmt.Errorf("failed to create stay: %w", err)
 	}
+	slog.Info("Checkin", "userID", stay.UserID, "hotelID", stay.HotelID, "time", stay.CheckinTime)
 	return &stay, nil
 }
 

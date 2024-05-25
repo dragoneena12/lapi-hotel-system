@@ -5,11 +5,11 @@ import (
 )
 
 type Config struct {
-	Debug     bool
-	DbName    string
-	SQLDriver string
-	Port      string
-	JWTSecret string
+	Debug       bool
+	DbName      string
+	SQLDriver   string
+	Port        string
+	Auth0Domain string
 }
 
 func NewConfig() *Config {
@@ -24,10 +24,10 @@ func NewConfig() *Config {
 		os.Setenv("DB_NAME", "development.db")
 	}
 	return &Config{
-		Debug:     os.Getenv("DEBUG") == "true",
-		SQLDriver: os.Getenv("SQL_DRIVER"),
-		DbName:    os.Getenv("DB_NAME"),
-		Port:      port,
-		JWTSecret: os.Getenv("JWT_SECRET"),
+		Debug:       os.Getenv("DEBUG") == "true",
+		SQLDriver:   os.Getenv("SQL_DRIVER"),
+		DbName:      os.Getenv("DB_NAME"),
+		Port:        port,
+		Auth0Domain: os.Getenv("AUTH0_DOMAIN"),
 	}
 }

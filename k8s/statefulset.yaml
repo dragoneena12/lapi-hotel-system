@@ -29,6 +29,8 @@ spec:
         env:
         - name: DB_NAME
           value: /data/production.db
+        - name: AUTH0_DOMAIN
+          value: lapi.us.auth0.com
         volumeMounts:
         - name: data
           mountPath: /data

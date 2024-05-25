@@ -1,7 +1,8 @@
 # lapi-hotel-system
-## install dependencies
+## run dev server
 ```
-go install
+export AUTH0_DOMAIN=lapi.us.auth0.com
+DEBUG=true go run .
 ```
 ## migration
 reference：https://qiita.com/k-kurikuri/items/946e2bf8c79176ef3ff0

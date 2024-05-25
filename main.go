@@ -14,6 +14,13 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
+	logLevel := slog.LevelInfo
+	if cfg.Debug {
+		logLevel = slog.LevelDebug
+	}
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
+	slog.SetDefault(logger)
+
 	d, err := db.NewDBConnection(*cfg)
 	if err != nil {
 		slog.Error("failed to connect to database: %v", err)
@@ -22,7 +29,7 @@ func main() {
 	stayRepository := db.NewStayRepository(d)
 	hotelRepository := db.NewHotelRepository(d)
 	handler := graph.NewHandler(auth.NewJWTAuthController(), controller.NewStayController(stayRepository, hotelRepository), controller.NewHotelController(hotelRepository), auth.JWTHasRole)
-	server := server.NewServer(*cfg, handler, auth.AuthMiddleware(*cfg))
+	server := server.NewServer(*cfg, handler, auth.AuthMiddleWare(cfg.Auth0Domain))
 	err = server.Start()
 	if err != nil {
 		slog.Error("failed to start server: %v", err)
