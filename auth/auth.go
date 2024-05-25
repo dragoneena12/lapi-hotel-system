@@ -24,7 +24,7 @@ func NewJWTAuthController() *JWTAuthController {
 func (c *JWTAuthController) GetUserID(ctx context.Context) (string, error) {
 	userID, ok := ctx.Value(userIDKey{}).(string)
 	if !ok {
-		return "", fmt.Errorf("failed to get user ID from context")
+		return "", fmt.Errorf("no auth info found")
 	}
 	return userID, nil
 }
@@ -32,7 +32,7 @@ func (c *JWTAuthController) GetUserID(ctx context.Context) (string, error) {
 func JWTHasRole(ctx context.Context, requestedRole string) (bool, error) {
 	roles, ok := ctx.Value(roleKey{}).([]string)
 	if !ok {
-		return false, fmt.Errorf("failed to get roles from context")
+		return false, fmt.Errorf("no auth info found")
 	}
 	roles = append(roles, "USER")
 	for _, r := range roles {
@@ -87,5 +87,6 @@ func getUserInfo(token, auth0Domain string) (*Auth0UserInfo, error) {
 	if err := json.Unmarshal(body, info); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response body: %w", err)
 	}
+	slog.Debug(fmt.Sprintf("user info: %+v", info))
 	return info, nil
 }

@@ -31,18 +31,24 @@ func NewStayController(stayRepository repository.StayRepository, hotelRepository
 
 func (c *stayController) Checkin(stay domain.Stay, passcode string) (*domain.Stay, error) {
 	now := time.Now()
-	recentStay, err := c.stayRepository.GetMostRecent(stay.UserID)
+	count, err := c.stayRepository.Count(stay.UserID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get most recent stay: %w", err)
+		return nil, fmt.Errorf("failed to get stay count: %w", err)
 	}
-	if recentStay.CheckinTime.After(now.Add(-24 * time.Hour)) {
-		return nil, fmt.Errorf("checkin is only allowed once per day")
+	if count > 0 {
+		recentStay, err := c.stayRepository.GetMostRecent(stay.UserID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get most recent stay: %w", err)
+		}
+		if recentStay.CheckinTime.After(now.Add(-24 * time.Hour)) {
+			return nil, fmt.Errorf("checkin is only allowed once per day")
+		}
 	}
-	hotel, err := c.hotelRepository.GetById(stay.HotelID)
+	hotelKey, err := c.hotelRepository.GetKeyById(stay.HotelID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get hotel: %w", err)
 	}
-	key, err := otp.NewKeyFromURL(hotel.Key)
+	key, err := otp.NewKeyFromURL(hotelKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get key: %w", err)
 	}
