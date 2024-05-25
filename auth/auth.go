@@ -50,6 +50,7 @@ func AuthMiddleWare(auth0Domain string) func(next http.Handler) http.Handler {
 			token := r.Header.Get("Authorization")
 			if token == "" {
 				next.ServeHTTP(w, r)
+				return
 			}
 			info, err := getUserInfo(token, auth0Domain)
 			if err != nil {
