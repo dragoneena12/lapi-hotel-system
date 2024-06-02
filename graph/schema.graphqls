@@ -14,14 +14,12 @@ scalar DateTime
 
 type Stay {
   id: ID!
-  hotelID: ID!
-  userID: ID!
+  hotel: Hotel!
   checkinTime: DateTime!
 }
 
 type Hotel {
   id: ID!
-  ownerID: ID!
   name: String!
   location: String!
   carbonAwards: [String!]!

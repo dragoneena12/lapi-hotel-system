@@ -57,3 +57,8 @@ models:
   
   DateTime:
     model: github.com/dragoneena12/lapi-hotel-system/graph/model.DateTime
+  
+  Stay:
+    fields:
+      hotel:
+        resolver: true

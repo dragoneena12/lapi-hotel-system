@@ -1,12 +1,22 @@
 package model
 
-import "github.com/dragoneena12/lapi-hotel-system/domain"
+import (
+	"time"
+
+	"github.com/dragoneena12/lapi-hotel-system/domain"
+)
+
+type Stay struct {
+	ID          string    `json:"id"`
+	HotelID     string    `json:"hotelID"`
+	Hotel       *Hotel    `json:"hotel"`
+	CheckinTime time.Time `json:"checkinTime"`
+}
 
 func NewStayModel(stay domain.Stay) *Stay {
 	return &Stay{
 		ID:          stay.ID,
 		HotelID:     stay.HotelID,
-		UserID:      stay.UserID,
 		CheckinTime: stay.CheckinTime,
 	}
 }

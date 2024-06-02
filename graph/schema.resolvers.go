@@ -130,11 +130,24 @@ func (r *queryResolver) HotelKey(ctx context.Context, id string) (*model.HotelKe
 	return &model.HotelKey{Key: key}, nil
 }
 
+// Hotel is the resolver for the hotel field.
+func (r *stayResolver) Hotel(ctx context.Context, obj *model.Stay) (*model.Hotel, error) {
+	hotel, err := r.hotelController.GetById(obj.HotelID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get hotel: %w", err)
+	}
+	return model.NewHotelModel(*hotel), nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Stay returns generated.StayResolver implementation.
+func (r *Resolver) Stay() generated.StayResolver { return &stayResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type stayResolver struct{ *Resolver }
