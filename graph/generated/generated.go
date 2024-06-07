@@ -58,6 +58,7 @@ type ComplexityRoot struct {
 		ID                   func(childComplexity int) int
 		Location             func(childComplexity int) int
 		Name                 func(childComplexity int) int
+		OwnerID              func(childComplexity int) int
 	}
 
 	HotelKey struct {
@@ -175,6 +176,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Hotel.Name(childComplexity), true
+
+	case "Hotel.ownerID":
+		if e.complexity.Hotel.OwnerID == nil {
+			break
+		}
+
+		return e.complexity.Hotel.OwnerID(childComplexity), true
 
 	case "HotelKey.key":
 		if e.complexity.HotelKey.Key == nil {
@@ -415,6 +423,7 @@ type Stay {
 
 type Hotel {
   id: ID!
+  ownerID: ID!
   name: String!
   location: String!
   carbonAwards: [String!]!
@@ -650,6 +659,50 @@ func (ec *executionContext) _Hotel_id(ctx context.Context, field graphql.Collect
 }
 
 func (ec *executionContext) fieldContext_Hotel_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Hotel",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Hotel_ownerID(ctx context.Context, field graphql.CollectedField, obj *model.Hotel) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Hotel_ownerID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OwnerID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Hotel_ownerID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Hotel",
 		Field:      field,
@@ -1166,6 +1219,8 @@ func (ec *executionContext) fieldContext_Mutation_addHotel(ctx context.Context, 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Hotel_id(ctx, field)
+			case "ownerID":
+				return ec.fieldContext_Hotel_ownerID(ctx, field)
 			case "name":
 				return ec.fieldContext_Hotel_name(ctx, field)
 			case "location":
@@ -1263,6 +1318,8 @@ func (ec *executionContext) fieldContext_Mutation_editHotel(ctx context.Context,
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Hotel_id(ctx, field)
+			case "ownerID":
+				return ec.fieldContext_Hotel_ownerID(ctx, field)
 			case "name":
 				return ec.fieldContext_Hotel_name(ctx, field)
 			case "location":
@@ -1480,6 +1537,8 @@ func (ec *executionContext) fieldContext_Query_hotels(_ context.Context, field g
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Hotel_id(ctx, field)
+			case "ownerID":
+				return ec.fieldContext_Hotel_ownerID(ctx, field)
 			case "name":
 				return ec.fieldContext_Hotel_name(ctx, field)
 			case "location":
@@ -1542,6 +1601,8 @@ func (ec *executionContext) fieldContext_Query_hotel(ctx context.Context, field 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Hotel_id(ctx, field)
+			case "ownerID":
+				return ec.fieldContext_Hotel_ownerID(ctx, field)
 			case "name":
 				return ec.fieldContext_Hotel_name(ctx, field)
 			case "location":
@@ -1871,6 +1932,8 @@ func (ec *executionContext) fieldContext_Stay_hotel(_ context.Context, field gra
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Hotel_id(ctx, field)
+			case "ownerID":
+				return ec.fieldContext_Hotel_ownerID(ctx, field)
 			case "name":
 				return ec.fieldContext_Hotel_name(ctx, field)
 			case "location":
@@ -3909,6 +3972,11 @@ func (ec *executionContext) _Hotel(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = graphql.MarshalString("Hotel")
 		case "id":
 			out.Values[i] = ec._Hotel_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "ownerID":
+			out.Values[i] = ec._Hotel_ownerID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

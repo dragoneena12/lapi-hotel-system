@@ -20,6 +20,7 @@ type Stay {
 
 type Hotel {
   id: ID!
+  ownerID: ID!
   name: String!
   location: String!
   carbonAwards: [String!]!
